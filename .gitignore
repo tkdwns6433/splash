@@ -1,0 +1,5 @@
+#folder
+vods/
+node_modules/
+#file
+*.swp

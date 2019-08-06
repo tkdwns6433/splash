@@ -1,0 +1,33 @@
+doctype html
+html
+  head
+    title Welcome to Splash!
+  body
+    h1 Splash Admin Page
+    h2 video upload
+    h3 by file
+    form(type='file', id='uploadForm', action='', method='post', enctype='multipart/form-data', value='test')
+      input(multiple='multiple', type='file', name='files')
+      input(type='submit')
+    h3 by file with auto encoding 
+    form(type='file', id='uploadFormEncoding', action='', method='post', enctype='multipart/form-data', value='test')
+      input(multiple='multiple', type='file', name='files')
+      input(type='submit') 
+    h2 video list
+    button(type='button', id='backButton', value='go back', onClick="upperFolder()")
+    button(type='button', id='backButton', value='go back', onClick="makeDir()")
+    table
+      thead
+        th name
+        th size
+        th extension
+        th type
+        th interaction
+        th delete
+        th rename
+      tbody(id='tbody')
+    script(src="restFrontAdmin.js")
+    script getVodList(); 
+    
+ 
+  
