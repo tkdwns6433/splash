@@ -6,8 +6,9 @@ html
     script(src="https://cdn.fluidplayer.com/v2/current/fluidplayer.min.js")
   body
     h1 Welcome To Splash!
-    video(id='main-player',controls, source src='', type='video/mp4', style="width: 640px; height: 360px;")
-    script(type="text/javascript") fluidPlayer('main-player'); console.log("player-load success");
+    div(id='wrap')
+      video(id='main-player',controls, style="width: 640px; height: 360px;")
+        source(src='', id='video-src', type='application/x-mpegURL')
     h2 video list
     button(type='button', id='backButton', value='go back', onClick="upperFolder()")
     table

@@ -10,7 +10,7 @@ app.set('view engine', 'pug');
 app.use(express.static('views'));
 
 
-app.listen(3000, () => {
+app.listen(80, () => {
 	console.log("application server started");
 });
 

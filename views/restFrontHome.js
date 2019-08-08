@@ -1,22 +1,47 @@
 var currentPath = 'vods';
 
+var hostname = document.location.hostname;
+
 function setPath(path){
 	currentPath = path;
 }
 
 function playVideo(vodname){
-	alert(vodname.value + '  this is file');
+	var path = vodname.value;
+	console.log(path);
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', 'http://' + hostname + ':8390/requesthls' + '?vodpath=' + path);
+	xhr.withCredentials = true;
+	xhr.send();
+	xhr.onload = function() {
+		if (xhr.status = 200) {
+			var hls = xhr.response;
+			var src = document.getElementById('video-src');
+			src.src = hls;
+			fluidPlayer('main-player',
+				{
+					layoutControls:{
+						subtitlesEnabled: true,
+						layout: 'default',
+						playButtonShowing: false
+					}
+				}
+			);
+		} 
+		else {
+			console.log('Error ${xhr.status} : ${xhr.statusText}');
+		}
+	};
+
 }
 
 function moveFolder(folderName){
-	console.log('before folder');
 	var Parent = document.getElementById('tbody');
 	while(Parent.hasChildNodes()){
 		Parent.removeChild(Parent.firstChild);
 	}
 	setPath(folderName.value);
 	getVodList(folderName.value);
-	console.log('after folder');
 }
 
 function upperFolder()
@@ -49,10 +74,10 @@ function drawDirectory(jsondir='vods'){
 		cell2.innerHTML = children[file]['extension'];
 		cell3.innerHTML = children[file]['type'];
 		if(cell3.innerHTML == 'file'){
-			cell4.innerHTML = '<button value=' + children[file]['path'] + ' onclick=\'playVideo(this)\'></button>';
+			cell4.innerHTML = '<button value=\'' + children[file]['path'] + '\' onclick=\'playVideo(this)\'></button>';
 		}
 		else if(cell3.innerHTML == 'directory'){
-	                cell4.innerHTML = '<button value=' + children[file]['path'] + ' onclick=\"moveFolder(this)\"></button>';
+	                cell4.innerHTML = '<button value=\'' + children[file]['path'] + '\' onclick=\"moveFolder(this)\"></button>';
 		}
 	}
 }
@@ -61,7 +86,7 @@ function getVodList(dir='vods'){
 	console.log('getVodListCalls');
 	setPath(dir);
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', 'http://127.0.0.1:8390/vodlist' + '?dir=' + dir);
+	xhr.open('GET', 'http://' + hostname + ':8390/vodlist' + '?dir=' + dir);
 	xhr.withCredentials = true;
 	xhr.send();
 	xhr.onload = function() {
