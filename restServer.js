@@ -90,6 +90,10 @@ var curFile = null;
 app.post('/uploadEncoding', upload.array('files'), (req, res) => {
 	res.status(200).send();
 	var files = req.files;
+	var getMetadata = require('./models/metadata.js');
+	for(i in files){
+		getMetaData(files[i], createTomongodb);
+	}
 	console.log(files.length + ' file upload completed, encoding Started');
 	encodingFilter(files);
 });
@@ -165,4 +169,5 @@ var runEncodingServer = async function(){
 }
 
 setInterval(runEncodingServer, 3000);
+
 
