@@ -1,11 +1,20 @@
-function go (){
-	var a = new Array();
-	a.push(1);
-	a.push(2);
-	a.push(3);
-	return a
+class Test{
+	constructor (name){
+		this.name = name;
+	}
+
+	go() {
+		console.log(this.name);
+	}
 }
 
-var network = require('os').networkInterfaces();
+var go = function(){
+	console.log('gaga');
+}
 
-console.log(network);
+module.exports = {
+	Test: Test,
+	go: go
+}
+
+
