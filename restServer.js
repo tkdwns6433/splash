@@ -5,6 +5,9 @@ var network = os.networkInterfaces();
 var lan = Object.keys(network)[1];
 var cors = require('cors');
 
+var connect = require('./schemas');
+connect();
+var Vodmeta = require('./schemas/vodmeta');
 
 var corsOption = {
 	origin: ['http://127.0.0.1', 'http://' + network[lan][0]['address']],
@@ -90,9 +93,20 @@ var curFile = null;
 app.post('/uploadEncoding', upload.array('files'), (req, res) => {
 	res.status(200).send();
 	var files = req.files;
-	var getMetadata = require('./models/metadata.js');
+	var getMetaData = require('./models/metaData');
 	for(i in files){
-		getMetaData(files[i], createTomongodb);
+		getMetaData(files[i], function(metafile){
+			const vodmeta = new Vodmeta(metafile);
+			vodmeta.save().
+			then((result) => {
+				console.log(result);
+				console.log('success');
+			})
+			.catch((err) => {
+				console.error(err);
+				next(err);
+			});
+		});
 	}
 	console.log(files.length + ' file upload completed, encoding Started');
 	encodingFilter(files);
