@@ -79,6 +79,17 @@ var upload = multer({
 	})
 });
 
+app.get('/metadata', cors(corsOption), (req, res) => {
+	Vodmeta.find({})
+	.then((vodmetas) => {
+		res.send(vodmetas)
+	})
+	.catch((err) => {
+		console.error(err);
+		next(err);
+	});
+});
+
 app.post('/upload', upload.array('files'), (req, res) => {
 	res.status(200).send();
 	console.log('upload completed in right folder');
@@ -95,12 +106,11 @@ app.post('/uploadEncoding', upload.array('files'), (req, res) => {
 	var files = req.files;
 	var getMetaData = require('./models/metaData');
 	for(i in files){
-		getMetaData(files[i], function(metafile){
+		getMetaData(files[i],'.mp4',function(metafile){
 			const vodmeta = new Vodmeta(metafile);
 			vodmeta.save().
 			then((result) => {
 				console.log(result);
-				console.log('success');
 			})
 			.catch((err) => {
 				console.error(err);

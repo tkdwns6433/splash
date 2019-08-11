@@ -56,6 +56,95 @@ function upperFolder()
 	}
 }
 
+function appendPara(div, data){
+	var para = document.createElement('p');
+	var node = document.createTextNode(data);
+	para.appendChild(node);
+	div.appendChild(para);
+}
+
+function posterHTML(meta){
+	var div = document.createElement('div');
+	div.className = 'col-md-4'
+	var img = document.createElement('img');
+	var str = new String(meta['Poster']);
+	if(str == 'N/A'){
+		img.src = 'http://103.117.231.226//Admin/main/no_poster.png'
+	}else{
+		img.src = meta['Poster'];
+	}
+	img.style.width = '300px'; img.style.height = '445px';
+	img.className = 'img-responsive';
+	div.appendChild(img);
+	appendPara(div, meta['Title']);
+	appendPara(div, meta['Year']);
+	appendPara(div, meta['originalname']);
+	return div;
+}
+/*
+function renderPoster(){
+	var posters = document.getElementById('posters');
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', 'http://' + hostname + ':8390/metadata');
+	xhr.withCredentials = true;
+	xhr.send();
+	xhr.onload = function() {
+		if (xhr.status = 200) {
+			var metadatas = JSON.parse(xhr.response);
+			const block = 4;
+			var curblock = 1;
+			var posters = document.getElementById('posters');
+			for(i in metadatas){
+				if(curblock == 1){
+	                        	var div = document.createElement('div');
+					div.className = 'row';
+					posters.appendChild(div);
+					var poster = posterHTML(metadatas[i]);
+					div.appendChild(poster);
+					curblock = curblock + 1;
+				} else if(curblock <= block){
+					var poster = posterHTML(metadatas[i]);
+					var lastdiv = posters.lastChild;
+					lastdiv.appendChild(poster);
+					curblock = curblock + 1;
+					if(curblock > block){
+						curblock = 1;
+					}
+				}
+
+			}
+		} 
+		else {
+			console.log('Error ${xhr.status} : ${xhr.statusText}');
+		}
+	};
+};
+*/
+function renderPoster(){
+	var posters = document.getElementById('posters');
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', 'http://' + hostname + ':8390/metadata');
+	xhr.withCredentials = true;
+	xhr.send();
+	xhr.onload = function() {
+		if (xhr.status = 200) {
+			var metadatas = JSON.parse(xhr.response);
+			var posters = document.getElementById('posters');
+			var div = document.createElement('div');
+			div.className = 'row row-eq-height';
+			posters.appendChild(div);
+			for(i in metadatas){
+					var poster = posterHTML(metadatas[i]);
+					div.appendChild(poster);
+			}
+		} 
+		else {
+			console.log('Error ${xhr.status} : ${xhr.statusText}');
+		}
+	};
+};
+
+renderPoster();
 function drawDirectory(jsondir='vods'){
 	var tbody = document.getElementById('tbody');
 	while(tbody.hasChildNodes()){

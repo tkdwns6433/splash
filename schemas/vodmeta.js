@@ -27,6 +27,8 @@ const vodmetaSchema = new Schema({
 	Production: String,
 	Website: String,
 	Response: String,
+	path: String,
+	originalname: String,
 	createAt: {
 		type: Date,
 		default: Date.now

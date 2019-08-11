@@ -1,0 +1,26 @@
+doctype html
+html
+  head
+    title Welcome to Splash!
+    link(rel="stylesheet", href="https://cdn.fluidplayer.com/v2/current/fluidplayer.min.css", type="text/css")
+    script(src="https://cdn.fluidplayer.com/v2/current/fluidplayer.min.js")
+  body
+    h1 Welcome To Splash!
+    div(id='wrap')
+      video(id='main-player',controls, style="width: 640px; height: 360px;")
+        source(src='', id='video-src', type='application/x-mpegURL')
+    h2 video list
+    button(type='button', id='backButton', value='go back', onClick="upperFolder()")
+    table
+      thead
+        th name
+        th size
+        th extension
+        th type
+        th interaction
+      tbody(id='tbody')
+    script(src="restFrontHome.js")
+    script getVodList(); 
+    
+ 
+  
