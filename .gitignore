@@ -1,7 +1,6 @@
 #folder
 vods/
 node_modules/
-schemas/
 #file
 *.swp
 set.js

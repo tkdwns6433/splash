@@ -2,23 +2,22 @@ doctype html
 html
   head
     title Welcome to Splash!
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
     link(rel="stylesheet", href="https://cdn.fluidplayer.com/v2/current/fluidplayer.min.css", type="text/css")
     script(src="https://cdn.fluidplayer.com/v2/current/fluidplayer.min.js")
   body
-    h1 Welcome To Splash!
-    div(id='wrap')
+    div(align='center', class='bg-primary')
+      h1 Welcome To Splash!
       video(id='main-player',controls, style="width: 640px; height: 360px;")
         source(src='', id='video-src', type='application/x-mpegURL')
-    h2 video list
-    button(type='button', id='backButton', value='go back', onClick="upperFolder()")
-    table
-      thead
-        th name
-        th size
-        th extension
-        th type
-        th interaction
-      tbody(id='tbody')
+    div(align='center', class='container', id='posters')
+      h1 vod list
+      button(class='btn btn-primary', align='left', type='button', id='backButton', onClick="upperFolder()") Go Back
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js")
     script(src="restFrontHome.js")
     script getVodList(); 
     
