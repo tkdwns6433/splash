@@ -31,6 +31,7 @@ app.get('/requesthls', cors(corsOption), (req, res) => {
 	else{
 		hls += network[lan][0]['address'] + ':8000/' + req.param('vodpath') + '/index.m3u8';
 	}
+	console.log(hls);
 	res.send(hls);
 })
 
@@ -84,7 +85,8 @@ app.get('/metadata', cors(corsOption), (req, res) => {
 	console.log(query);
 	Vodmeta.find(query)
 	.then((vodmetas) => {
-		res.send(vodmetas)
+		console.log(vodmetas);
+		res.send(vodmetas);
 	})
 	.catch((err) => {
 		console.error(err);

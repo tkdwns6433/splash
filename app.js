@@ -3,9 +3,9 @@ var app = express();
 var cors = require('cors');
 
 
-app.locals.pretty = true;
+app.locals.pretty = false;
 app.set('views', './views');
-app.set('view engine', 'pug');
+app.set('view engine', 'pug', );
 
 app.use(express.static('views'));
 
@@ -26,3 +26,6 @@ app.get("/admin", (req, res) => {
 	res.render('admin');
 });
 
+app.get("/player", (req, res) => {
+	res.render('player');
+});

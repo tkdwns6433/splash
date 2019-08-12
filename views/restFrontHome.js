@@ -6,8 +6,8 @@ function setPath(path){
 	currentPath = path;
 }
 
-function playVideo(vodname){
-	var path = vodname.value;
+function playVideo(){
+	var path = document.getElementById('Path').innerHTML;
 	console.log(path);
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', 'http://' + hostname + ':8390/requesthls' + '?vodpath=' + path);
@@ -15,9 +15,18 @@ function playVideo(vodname){
 	xhr.send();
 	xhr.onload = function() {
 		if (xhr.status = 200) {
+			if(document.getElementById('main-player') != null){
+				var fluidWrapper = document.getElementById('fluid_video_wrapper_main-player');
+				fluidWrapper.remove();
+			}
 			var hls = xhr.response;
-			var src = document.getElementById('video-src');
+			var src = document.createElement('source');
 			src.src = hls;
+			src.type = 'application/x-mpegURL';
+			var video = document.createElement('video');
+			document.getElementById('modal-player-content').appendChild(video);
+			video.id = 'main-player';
+			video.appendChild(src);
 			fluidPlayer('main-player',
 				{
 					layoutControls:{
@@ -27,33 +36,17 @@ function playVideo(vodname){
 					}
 				}
 			);
+			var fluidWrapper = document.getElementById('fluid_video_wrapper_main-player');
+			fluidWrapper.style.width = '100%';
+			fluidWrapper.style.height= '100%';
+			$("#modal-synopsis").modal('hide');
+			$("#modal-player").modal('show');
 		} 
 		else {
 			console.log('Error ${xhr.status} : ${xhr.statusText}');
 		}
 	};
 
-}
-
-function moveFolder(folderName){
-	var Parent = document.getElementById('tbody');
-	while(Parent.hasChildNodes()){
-		Parent.removeChild(Parent.firstChild);
-	}
-	setPath(folderName.value);
-	getVodList(folderName.value);
-}
-
-function upperFolder()
-{
-	if(currentPath == 'vods'){
-		alert('already Top Folder');
-	}
-	else{
-	var path = currentPath.split('/');
-	path.pop();
-	moveFolder(path.join('/'));
-	}
 }
 
 function appendPara(div, data){
@@ -65,20 +58,31 @@ function appendPara(div, data){
 
 function setModalMetaData(data){
 	var poster = document.getElementById('modal-poster');
+	console.log('called');
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', 'http://' + hostname + ':8390/metadata?json='+ JSON.stringify({"originalname":data}));
 	xhr.withCredentials = true;
 	xhr.send();
 	xhr.onload = function() {
 		if (xhr.status = 200) {
-			var metadata = JSON.parse(xhr.response);
+			var metadata = JSON.parse(xhr.response)[0];
 			console.log(metadata);
-			var str = new String(metadata[0]['Poster']);
+			var str = new String(metadata['Poster']);
 			if(str == 'N/A'){
 				poster.src = 'http://103.117.231.226//Admin/main/no_poster.png'
 			}else{
-				poster.src = metadata[0]['Poster'];
+				poster.src = metadata['Poster'];
 			}
+			document.getElementById('Title').innerHTML = metadata['Title'];
+			document.getElementById('Year').innerHTML = metadata['Year'];
+			document.getElementById('Runtime').innerHTML = 'Runtime : ' + metadata['Runtime'];
+			document.getElementById('Genre').innerHTML = 'Genre : ' +  metadata['Genre'];
+			document.getElementById('Director').innerHTML = 'Director : ' +  metadata['Director'];
+			document.getElementById('Actors').innerHTML = 'Actors : ' +  metadata['Actors'];
+			document.getElementById('Plot').innerHTML = metadata['Plot'];
+			document.getElementById('Language').innerHTML = 'Language : ' +  metadata['Language'];
+			document.getElementById('Metascore').innerHTML = 'Metascore : ' +  metadata['Metascore'];
+			document.getElementById('Path').innerHTML = metadata['path'];
 		} 
 		else {
 			console.log('Error ${xhr.status} : ${xhr.statusText}');
@@ -90,7 +94,7 @@ function setModalMetaData(data){
 
 function posterHTML(meta){
 	var div = document.createElement('div');
-	div.className = 'col-md-4'
+	div.className = 'col-sm-3'
 	var img = document.createElement('img');
 	var str = new String(meta['Poster']);
 	if(str == 'N/A'){
@@ -109,45 +113,7 @@ function posterHTML(meta){
 	appendPara(div, meta['originalname']);
 	return div;
 }
-/*
-function renderPoster(){
-	var posters = document.getElementById('posters');
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', 'http://' + hostname + ':8390/metadata');
-	xhr.withCredentials = true;
-	xhr.send();
-	xhr.onload = function() {
-		if (xhr.status = 200) {
-			var metadatas = JSON.parse(xhr.response);
-			const block = 4;
-			var curblock = 1;
-			var posters = document.getElementById('posters');
-			for(i in metadatas){
-				if(curblock == 1){
-	                        	var div = document.createElement('div');
-					div.className = 'row';
-					posters.appendChild(div);
-					var poster = posterHTML(metadatas[i]);
-					div.appendChild(poster);
-					curblock = curblock + 1;
-				} else if(curblock <= block){
-					var poster = posterHTML(metadatas[i]);
-					var lastdiv = posters.lastChild;
-					lastdiv.appendChild(poster);
-					curblock = curblock + 1;
-					if(curblock > block){
-						curblock = 1;
-					}
-				}
 
-			}
-		} 
-		else {
-			console.log('Error ${xhr.status} : ${xhr.statusText}');
-		}
-	};
-};
-*/
 function renderPoster(){
 	var posters = document.getElementById('posters');
 	var xhr = new XMLHttpRequest();
@@ -159,7 +125,7 @@ function renderPoster(){
 			var metadatas = JSON.parse(xhr.response);
 			var posters = document.getElementById('posters');
 			var div = document.createElement('div');
-			div.className = 'row row-eq-height';
+			div.className = 'row';
 			posters.appendChild(div);
 			for(i in metadatas){
 					var poster = posterHTML(metadatas[i]);
