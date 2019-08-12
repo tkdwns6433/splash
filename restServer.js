@@ -80,7 +80,9 @@ var upload = multer({
 });
 
 app.get('/metadata', cors(corsOption), (req, res) => {
-	Vodmeta.find({})
+	var query = JSON.parse(req.param('json'));
+	console.log(query);
+	Vodmeta.find(query)
 	.then((vodmetas) => {
 		res.send(vodmetas)
 	})
@@ -173,7 +175,9 @@ var runEncodingServer = async function(){
 		console.log('start encoding ' + curFile);
 	}
 	else{
-		console.log(encodingList.length + ' more files to encoding ' + encodingList);
+		if(encodingList.length > 0){
+			console.log(encodingList.length + ' more files to encoding ' + encodingList);
+		}
 		return;
 	}
 	isEncoding = true;

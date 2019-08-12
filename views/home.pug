@@ -9,6 +9,11 @@ html
     link(rel="stylesheet", href="https://cdn.fluidplayer.com/v2/current/fluidplayer.min.css", type="text/css")
     script(src="https://cdn.fluidplayer.com/v2/current/fluidplayer.min.js")
   body
+    button(type="button", class="btn btn-primary", data-toggle="modal", data-target=".bd-example-modal-lg") Large modal
+    div(class="modal fade bd-example-modal-lg", tabindex="-1", role="dialog", aria-labelledby="myLargeModalLabel", aria-hidden="true")
+      div(class="modal-dialog modal-lg")
+        div(class="modal-content")
+          img(id='modal-poster', class='img-responsive')
     div(align='center', class='bg-primary')
       h1 Welcome To Splash!
       video(id='main-player',controls, style="width: 640px; height: 360px;")
