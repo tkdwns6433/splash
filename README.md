@@ -18,15 +18,15 @@ pug html 템플릿 엔진, Bootstrap
 Node JS, MongoDB
 
 ## 파일 구조
-app.js
-  express 웹 서버
-restServer.js
-  REST API 서버
-views
- pug html 템플릿 파일, js 파일
-models
- 데이터 처리
-etc
- 기타 파일(nginx 설정 파일)
-schemas
- mongoDB 연결, 메타데이터 스키마 정의
+app.js<br>
+--express 웹 서버<br>
+restServer.js<br>
+--REST API 서버<br>
+views<br>
+--pug html 템플릿 파일, js 파일<br>
+models<br>
+--데이터 처리<br>
+etc<br>
+--기타 파일(nginx 설정 파일) <br>
+schemas<br>
+--mongoDB 연결, 메타데이터 스키마 정의<br>
