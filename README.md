@@ -19,14 +19,14 @@ Node JS, MongoDB
 
 ## 파일 구조
 app.js<br>
---express 웹 서버<br>
+: express 웹 서버<br>
 restServer.js<br>
---REST API 서버<br>
+: REST API 서버<br>
 views<br>
---pug html 템플릿 파일, js 파일<br>
+: pug html 템플릿 파일, js 파일<br>
 models<br>
---데이터 처리<br>
+: 데이터 처리<br>
 etc<br>
---기타 파일(nginx 설정 파일) <br>
+: 기타 파일(nginx 설정 파일) <br>
 schemas<br>
---mongoDB 연결, 메타데이터 스키마 정의<br>
+: mongoDB 연결, 메타데이터 스키마 정의<br>
