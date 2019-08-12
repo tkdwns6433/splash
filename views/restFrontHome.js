@@ -63,6 +63,31 @@ function appendPara(div, data){
 	div.appendChild(para);
 }
 
+function setModalMetaData(data){
+	var poster = document.getElementById('modal-poster');
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', 'http://' + hostname + ':8390/metadata?json='+ JSON.stringify({"originalname":data}));
+	xhr.withCredentials = true;
+	xhr.send();
+	xhr.onload = function() {
+		if (xhr.status = 200) {
+			var metadata = JSON.parse(xhr.response);
+			console.log(metadata);
+			var str = new String(metadata[0]['Poster']);
+			if(str == 'N/A'){
+				poster.src = 'http://103.117.231.226//Admin/main/no_poster.png'
+			}else{
+				poster.src = metadata[0]['Poster'];
+			}
+		} 
+		else {
+			console.log('Error ${xhr.status} : ${xhr.statusText}');
+		}
+	};
+
+	//get request and change modal
+}
+
 function posterHTML(meta){
 	var div = document.createElement('div');
 	div.className = 'col-md-4'
@@ -75,6 +100,9 @@ function posterHTML(meta){
 	}
 	img.style.width = '300px'; img.style.height = '445px';
 	img.className = 'img-responsive';
+	img.dataset.target = '.bd-example-modal-lg';
+	img.dataset.toggle='modal';
+	img.setAttribute('onclick', 'setModalMetaData(\'' + meta['originalname'] + '\')');
 	div.appendChild(img);
 	appendPara(div, meta['Title']);
 	appendPara(div, meta['Year']);
@@ -123,7 +151,7 @@ function renderPoster(){
 function renderPoster(){
 	var posters = document.getElementById('posters');
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', 'http://' + hostname + ':8390/metadata');
+	xhr.open('GET', 'http://' + hostname + ':8390/metadata?json={}');
 	xhr.withCredentials = true;
 	xhr.send();
 	xhr.onload = function() {
