@@ -1,3 +1,5 @@
+var MongooseQueryParser = require('mongoose-query-parser').MongooseQueryParser;
+const parser = new MongooseQueryParser();
 const express = require('express');
 const app = express();
 const os = require('os');
@@ -81,11 +83,15 @@ var upload = multer({
 });
 
 app.get('/metadata', cors(corsOption), (req, res) => {
-	var query = JSON.parse(req.param('json'));
-	console.log(query);
+	console.log(req.param('json'));
+	var json = JSON.parse(req.param('json'));
+	var keys = Object.keys(json);
+	var query = new Object;
+	for(i in keys){
+		query[keys[i]] = new RegExp(json[keys[i]]);
+	}
 	Vodmeta.find(query)
 	.then((vodmetas) => {
-		console.log(vodmetas);
 		res.send(vodmetas);
 	})
 	.catch((err) => {
@@ -94,6 +100,24 @@ app.get('/metadata', cors(corsOption), (req, res) => {
 	});
 });
 
+app.get('/metaDistinct', cors(corsOption), (req, res) => {
+	console.log(req.param('json'));
+	var json = JSON.parse(req.param('json'));
+	var keys = Object.keys(json);
+	var query = new Object;
+	for(i in keys){
+		query[keys[i]] = new RegExp(json[keys[i]]);
+	}
+	Vodmeta.find(query).distinct(req.param('distinct'))
+	.then((result) => {
+		console.log(result);
+		res.send(result);
+	})
+	.catch((err) => {
+		console.error(err);
+		next(err);
+	});
+});
 app.post('/upload', upload.array('files'), (req, res) => {
 	res.status(200).send();
 	console.log('upload completed in right folder');

@@ -36,8 +36,13 @@ html
     div(align='center', class='bg-primary')
       h1 Welcome To Splash!
     div(align='center', class='container, bg-info', id='posters')
-      h1 VOD LIST
-      button(class='btn btn-primary', align='left', type='button', id='backButton', onClick="upperFolder()") Go Back
+      h1(id='gnb') VOD LIST
+      br
+      button(class='btn btn-primary', align='left', type='button', id='backButton', onClick="goBack()") Go Back
+      br
+      br
+      br
+      div(class='row', id='p-row')
     script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js")
     script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js")
     script(src="restFrontHome.js")
