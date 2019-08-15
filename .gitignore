@@ -1,6 +1,8 @@
 #folder
 vods/
 node_modules/
+coverage/
+test/
 #file
 *.swp
 set.js

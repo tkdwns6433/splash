@@ -25,5 +25,9 @@
     "torrent": "^2.0.0",
     "version": "^0.1.2",
     "webtorrent": "^0.107.2"
+  },
+  "devDependencies": {
+    "istanbul": "^0.4.5",
+    "mocha": "^6.2.0"
   }
 }

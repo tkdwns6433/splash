@@ -9,13 +9,10 @@ app.set('view engine', 'pug', );
 
 app.use(express.static('views'));
 
+const port = 80;
 
-app.listen(80, () => {
+app.listen(port, () => {
 	console.log("application server started");
-});
-
-app.get("/", (req, res) => {
-	res.render('login');
 });
 
 app.get("/home", cors(), (req, res) => {
@@ -26,6 +23,4 @@ app.get("/admin", (req, res) => {
 	res.render('admin');
 });
 
-app.get("/player", (req, res) => {
-	res.render('player');
-});
+

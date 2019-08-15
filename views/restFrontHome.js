@@ -2,7 +2,7 @@ var currentPath = 'vods';
 
 var hostname = document.location.hostname;
 
-var library = ['Genre', 'Actors', 'Director'];
+var library = ['Actors', 'Genre'];
 var depthStacks = new Array();
 
 renderDepth(library[0]);
@@ -27,11 +27,7 @@ function goBack(){
 		renderDepth(library[depthStacks.length]);
 	}
 	else{
-		console.log('go back called');
-		console.log('before : ', depthStacks);
 		depthStacks.pop();
-		console.log('after : ', depthStacks);
-		console.log(depthStacks.length);
 		renderDepth(library[depthStacks.length]);
 	}
 }
@@ -53,7 +49,7 @@ function renderDepth(filter){
 	}
 	gnb.innerHTML = library[depthStacks.length];
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', 'http://' + hostname + ':8390/metaDistinct?json=' + JSON.stringify(json) + '&distinct=' + library[depthStacks.length]);
+	xhr.open('GET', 'http://' + hostname + ':8390/getDepth?json=' + JSON.stringify(json) + '&distinct=' + library[depthStacks.length]);
 	xhr.withCredentials = true;
 	xhr.send();
 	xhr.onload = function() {
@@ -132,7 +128,7 @@ function setModalMetaData(data){
 	var poster = document.getElementById('modal-poster');
 	console.log('called');
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', 'http://' + hostname + ':8390/metadata?json='+ JSON.stringify({"originalname":data}));
+	xhr.open('GET', 'http://' + hostname + ':8390/synopsis?json='+ JSON.stringify({"originalname":data}));
 	xhr.withCredentials = true;
 	xhr.send();
 	xhr.onload = function() {
@@ -189,7 +185,7 @@ function posterHTML(meta){
 function renderPoster(query='{}'){
 	var posters = document.getElementById('posters');
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', 'http://' + hostname + ':8390/metadata?json=' + JSON.stringify(query));
+	xhr.open('GET', 'http://' + hostname + ':8390/synopsis?json=' + JSON.stringify(query));
 	xhr.withCredentials = true;
 	xhr.send();
 	xhr.onload = function() {
