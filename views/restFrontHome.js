@@ -2,7 +2,7 @@ var currentPath = 'vods';
 
 var hostname = document.location.hostname;
 
-var library = ['Actors', 'Genre'];
+var library = ['Type', 'Genre', 'Actors'];
 var depthStacks = new Array();
 
 

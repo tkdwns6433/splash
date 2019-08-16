@@ -7,7 +7,7 @@ var express = require('express');
 var router = express.Router();
 
 router.get('/', (req, res) => {
-	makeDir(req.params.path, req.params.dirName);
+	makeDir(req.param('path'), req.param('dirName'));
 	res.send();
 });
 
