@@ -1,7 +1,6 @@
 var deleteFile = function(filePath){
-	console.log('deletefilecalls');
-	var fs = require('fs');
-	fs.unlink(filePath);
+	var fs = require('fs-extra');
+	fs.removeSync(filePath);
 }
 
 module.exports = deleteFile;

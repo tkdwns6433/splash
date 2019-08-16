@@ -1,7 +1,10 @@
 var express = require('express');
-var vodlist = require('../models/vodlist');
-
 var router = express.Router();
+
+var vodlist = function(vodfolder){
+        var dt = require('directory-tree');
+        return tree = dt(vodfolder);
+}
 
 router.get('/', (req, res) => {
 	var result = vodlist(req.param('dir'))

@@ -20,5 +20,6 @@ module.exports = () => {
 		console.error('mongodb disconnected. retry connection.');
 		connect();
 	});
+	
 	require('./vodmeta');
 };

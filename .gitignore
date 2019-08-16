@@ -7,3 +7,13 @@ test/
 *.swp
 set.js
 test.js
+filedata.js.html
+prettify.js
+base.css
+index.html
+renameFile.js.html
+block-navigation.js
+deleteFile.js.html
+prettify.css
+sort-arrow-sprite.png
+sorter.js
