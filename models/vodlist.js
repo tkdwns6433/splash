@@ -3,7 +3,5 @@ var vodlist = function(vodfolder){
 	return tree = dt(vodfolder);
 }
 
-console.log(vodlist('../vods/'));
-
 module.exports = vodlist;
 

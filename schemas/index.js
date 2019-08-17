@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 module.exports = () => {
 	const connect = () => {
 		mongoose.connect('mongodb://localhost:27017/metadata',{
-		dbName: 'metadata',
+			dbName: 'metadata',useNewUrlParser:true,
 		}, (error) => {
 			if(error){
 				console.log('connection error', error);
@@ -20,5 +20,6 @@ module.exports = () => {
 		console.error('mongodb disconnected. retry connection.');
 		connect();
 	});
+	
 	require('./vodmeta');
 };

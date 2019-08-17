@@ -1,68 +1,50 @@
 const express = require('express');
 const app = express();
+
 const os = require('os');
 var network = os.networkInterfaces();
 var lan = Object.keys(network)[1];
-var cors = require('cors');
+const local = 'http://127.0.0.1';
+const eth = 'http://' + network[lan][0]['address'];
 
 var connect = require('./schemas');
 connect();
 var Vodmeta = require('./schemas/vodmeta');
 
+const port = '8390';
+app.use(express.static('public'));
+app.listen(port, () => {
+	console.log('port:' + port + ' rest api server start');
+});
+
+var cors = require('cors');
 var corsOption = {
-	origin: ['http://127.0.0.1', 'http://' + network[lan][0]['address']],
+	origin: [local, eth],
 	optionsSuccessStatus: 200,
 	credentials: true
 }
+app.use(cors(corsOption));
 
-app.use(express.static('public'));
-app.listen('8390', () => {
-	console.log('port:8390 rest api server start');
-});
+var requesthlsRouter = require('./routes/requesthls.js');
+var filelistsRouter = require('./routes/filelists.js');
+var deleteFileRouter = require('./routes/deleteFile.js');
+var renameFileRouter = require('./routes/renameFile.js');
+var makeDirRouter = require('./routes/makeDir.js');
+var synopsisRouter = require('./routes/synopsis.js');
+var getDepthRouter = require('./routes/getDepth.js');
+var uploadRouter = require('./routes/upload.js');
 
-app.get('/requesthls', cors(corsOption), (req, res) => {
-	var hls ='http://';
-	const fs = require('fs');
-	const path = require('path');
-	var srt = req.param('vodpath').replace(path.extname(req.param('vodpath')),'.srt');
-	if(fs.existsSync(srt)){
-		hls += network[lan][0]['address'] + ':8000/,' + req.param('vodpath') + ',' + srt + ',.urlset/master.m3u8';
-	}
-	else{
-		hls += network[lan][0]['address'] + ':8000/' + req.param('vodpath') + '/index.m3u8';
-	}
-	res.send(hls);
-})
+app.use('/vodlist', filelistsRouter);
+app.use('/renameFile', renameFileRouter);
+app.use('/deleteFile', deleteFileRouter);
+app.use('/makeDir', makeDirRouter);
+app.use('/requesthls', requesthlsRouter);
+app.use('/synopsis', synopsisRouter);
+app.use('/getDepth', getDepthRouter);
+app.use('/upload', uploadRouter);
 
-app.get('/vodlist',cors(corsOption), (req, res) => {
-	var vodlist = require('./models/vodlist');
-	var result = vodlist(req.param('dir'));
-	if(result != null){
-		res.send(result);
-	}
-	else
-	{
-		res.send('error 400');
-	}
-});
 
-app.get('/renameFile', cors(corsOption), (req, res) => {
-	var renameFile = require('./models/renameFile');
-	renameFile(req.param('path'), req.param('rename'));
-	res.send();
-});
-
-app.get('/deleteFile', cors(corsOption), (req, res) => {
-	var deleteFile = require('./models/deleteFile');
-	deleteFile(req.param('path'));
-	res.send();
-});
-
-app.get('/makeDir', cors(corsOption), (req, res) => {
-	var makeDir = require('./models/makeDir');
-	makeDir(req.param('path'), req.param('dirName'));
-	res.send();
-});
+//auto Encoding Section
 
 var multer = require('multer');
 var fs = require('fs-extra');
@@ -79,23 +61,6 @@ var upload = multer({
 	})
 });
 
-app.get('/metadata', cors(corsOption), (req, res) => {
-	var query = JSON.parse(req.param('json'));
-	console.log(query);
-	Vodmeta.find(query)
-	.then((vodmetas) => {
-		res.send(vodmetas)
-	})
-	.catch((err) => {
-		console.error(err);
-		next(err);
-	});
-});
-
-app.post('/upload', upload.array('files'), (req, res) => {
-	res.status(200).send();
-	console.log('upload completed in right folder');
-});
 
 var ffmpeg = require('fluent-ffmpeg');
 const Promise = require('bluebird');
@@ -106,7 +71,7 @@ var curFile = null;
 app.post('/uploadEncoding', upload.array('files'), (req, res) => {
 	res.status(200).send();
 	var files = req.files;
-	var getMetaData = require('./models/metaData');
+	var getMetaData = require('./models/filedata');
 	for(i in files){
 		getMetaData(files[i],'.mp4',function(metafile){
 			const vodmeta = new Vodmeta(metafile);

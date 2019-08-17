@@ -8,23 +8,45 @@ html
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
     link(rel="stylesheet", href="https://cdn.fluidplayer.com/v2/current/fluidplayer.min.css", type="text/css")
     script(src="https://cdn.fluidplayer.com/v2/current/fluidplayer.min.js")
-  body
-    button(type="button", class="btn btn-primary", data-toggle="modal", data-target=".bd-example-modal-lg") Large modal
-    div(class="modal fade bd-example-modal-lg", tabindex="-1", role="dialog", aria-labelledby="myLargeModalLabel", aria-hidden="true")
+  body(style="{display:flex;padding:0;margin:0;}", class='bg-info')
+    div(class="modal fade player", tabindex="-1", role="dialog", aria-labelledby="myLargeModalLabel",aria-hidden="true", id='modal-player')
+      div(class="modal-dialog modal-md", role="document")
+        div(class="modal-content")
+          div(class="modal-body mb-0 p-0", id='modal-player-content')
+    div(class="modal fade bd-example-modal-lg", tabindex="-1", role="dialog", aria-labelledby="myLargeModalLabel",aria-hidden="true", id='modal-synopsis')
       div(class="modal-dialog modal-lg")
         div(class="modal-content")
-          img(id='modal-poster', class='img-responsive')
-    div(align='center', class='bg-primary')
-      h1 Welcome To Splash!
-      video(id='main-player',controls, style="width: 640px; height: 360px;")
-        source(src='', id='video-src', type='application/x-mpegURL')
-    div(align='center', class='container', id='posters')
-      h1 vod list
-      button(class='btn btn-primary', align='left', type='button', id='backButton', onClick="upperFolder()") Go Back
+          div(class="modal-body")
+            div(class="row")
+              div(class="col-md-4")
+                img(id='modal-poster', class='img-responsive', width="300px", height="445px")
+              div(class="col-md-6", id="synopsis")
+                h1(id='Title') Spiderman
+                p(id='Year') 1990
+                p(id='Runtime') 5 Min
+                h3(id='Genre') Horror
+                h3(id='Director') vaughn Stein
+                h3(id='Actors')
+                p(id='Plot') ajdiowjdwioajdioawjdiowajdioajdioajdioajdioawjdioawjdawiojdw
+                h3(id='Language') English
+                h3(id='Metascore') 25
+                p(id='Path') vods/terminal.mp4
+          div(class="modal-footer")
+            button(id='play-button', type="button", class="btn btn-secondary", onclick="playVideo()") Play  
+    div(align='center')
+      img(src='splash.png', class='img-responsive')
+    div(align='center', class='container, bg-info', id='posters')
+      h1(id='gnb') VOD LIST
+      br
+      button(class='btn btn-primary', align='left', type='button', id='backButton', onClick="goBack()") Go Back
+      br
+      br
+      br
+      div(class='row', id='p-row')
     script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js")
     script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js")
     script(src="restFrontHome.js")
-    script getVodList(); 
-    
- 
+    script(src="playVideo.js")
+    script(src="posterRender.js")
+    script(src="depthRender.js")
   

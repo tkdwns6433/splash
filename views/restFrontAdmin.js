@@ -14,7 +14,6 @@ function makeDir(){
 	var dirName = prompt('input Directory name');
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', 'http://' + hostname + ':8390/makeDir' + '?path=' + currentPath + '&dirName=' + dirName);
-	xhr.withCredentials = true;
 	xhr.send();
 	xhr.onload = function() {
 	if (xhr.status = 200) {

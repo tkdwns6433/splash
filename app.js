@@ -3,19 +3,16 @@ var app = express();
 var cors = require('cors');
 
 
-app.locals.pretty = true;
+app.locals.pretty = false;
 app.set('views', './views');
-app.set('view engine', 'pug');
+app.set('view engine', 'pug', );
 
 app.use(express.static('views'));
 
+const port = 80;
 
-app.listen(80, () => {
+app.listen(port, () => {
 	console.log("application server started");
-});
-
-app.get("/", (req, res) => {
-	res.render('login');
 });
 
 app.get("/home", cors(), (req, res) => {
@@ -25,4 +22,5 @@ app.get("/home", cors(), (req, res) => {
 app.get("/admin", (req, res) => {
 	res.render('admin');
 });
+
 
