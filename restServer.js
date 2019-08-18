@@ -1,46 +1,50 @@
 const express = require('express');
 const app = express();
-var cors = require('cors');
 
+const os = require('os');
+var network = os.networkInterfaces();
+var lan = Object.keys(network)[1];
+const local = 'http://127.0.0.1';
+const eth = 'http://' + network[lan][0]['address'];
+
+var connect = require('./schemas');
+connect();
+var Vodmeta = require('./schemas/vodmeta');
+
+const port = '8390';
+app.use(express.static('public'));
+app.listen(port, () => {
+	console.log('port:' + port + ' rest api server start');
+});
+
+var cors = require('cors');
 var corsOption = {
-	origin: ['http://127.0.0.1:3000', 'http://211.110.58.139'],
+	origin: [local, eth],
 	optionsSuccessStatus: 200,
 	credentials: true
 }
-app.use(express.static('public'));
-app.listen('8390', () => {
-	console.log('port:8390 rest api server start');
-});
+app.use(cors(corsOption));
 
-app.get('/vodlist',cors(corsOption), (req, res) => {
-	var vodlist = require('./models/vodlist');
-	var result = vodlist(req.param('dir'));
-	if(result != null){
-		res.send(result);
-	}
-	else
-	{
-		res.send('error 400');
-	}
-});
+var requesthlsRouter = require('./routes/requesthls.js');
+var filelistsRouter = require('./routes/filelists.js');
+var deleteFileRouter = require('./routes/deleteFile.js');
+var renameFileRouter = require('./routes/renameFile.js');
+var makeDirRouter = require('./routes/makeDir.js');
+var synopsisRouter = require('./routes/synopsis.js');
+var getDepthRouter = require('./routes/getDepth.js');
+var uploadRouter = require('./routes/upload.js');
 
-app.get('/renameFile', cors(corsOption), (req, res) => {
-	var renameFile = require('./models/renameFile');
-	renameFile(req.param('path'), req.param('rename'));
-	res.send();
-});
+app.use('/vodlist', filelistsRouter);
+app.use('/renameFile', renameFileRouter);
+app.use('/deleteFile', deleteFileRouter);
+app.use('/makeDir', makeDirRouter);
+app.use('/requesthls', requesthlsRouter);
+app.use('/synopsis', synopsisRouter);
+app.use('/getDepth', getDepthRouter);
+app.use('/upload', uploadRouter);
 
-app.get('/deleteFile', cors(corsOption), (req, res) => {
-	var deleteFile = require('./models/deleteFile');
-	deleteFile(req.param('path'));
-	res.send();
-});
 
-app.get('/makeDir', cors(corsOption), (req, res) => {
-	var makeDir = require('./models/makeDir');
-	makeDir(req.param('path'), req.param('dirName'));
-	res.send();
-});
+//auto Encoding Section
 
 var multer = require('multer');
 var fs = require('fs-extra');
@@ -57,64 +61,103 @@ var upload = multer({
 	})
 });
 
-app.post('/upload', upload.array('files'), (req, res) => {
-	res.status(200).send();
-	console.log('upload completed in right folder');
-});
 
-var encodingList = [];
+var ffmpeg = require('fluent-ffmpeg');
+const Promise = require('bluebird');
+
+var encodingList = new Array();
 var isEncoding = false;
-var curEncode = null;
+var curFile = null;
 app.post('/uploadEncoding', upload.array('files'), (req, res) => {
 	res.status(200).send();
-	console.log('upload completed, encoding Stated');
 	var files = req.files;
-        //input files and get filtered list path->ffprobe->filter->path
-	//append encodingList only need path
+	var getMetaData = require('./models/filedata');
 	for(i in files){
-		encodingList.push(files[i]);
+		getMetaData(files[i],'.mp4',function(metafile){
+			const vodmeta = new Vodmeta(metafile);
+			vodmeta.save().
+			then((result) => {
+				console.log(result);
+			})
+			.catch((err) => {
+				console.error(err);
+				next(err);
+			});
+		});
 	}
+	console.log(files.length + ' file upload completed, encoding Started');
+	encodingFilter(files);
 });
 
 var options = '';
 var encOp = {format: 'mp4', audio: 'aac', video: 'h264', vcodec: 'libx264', acodec: 'aac'};
 
-var ffmpeg = require('fluent-ffmpeg');
-const Promise = require('bluebird');
+
+async function encodingFilter(files){
+	for(i in files){
+		var needEncoding = true;
+                var checker =  ffmpeg().input(files[i]['path']).ffprobe(function(err, data){
+                        if(data == undefined){
+                                console.log('invalid data');
+                                return;
+                        }
+                        //format
+                        var formats =  data['format']['format_name'].split(',');
+                        for(k in formats){
+                                if(formats[k] == encOp['format']){
+                                        needEncoding = false;
+                                        break;
+                                }
+                        }
+                        //video codec
+                        if(data['streams'][0]['codec_name'] != encOp['video']){
+                                needEncoding = true;
+                        }
+                        //audio codec
+                        if(data['streams'][1]['codec_name'] != encOp['audio']){
+                                needEncoding = true;
+                        }
+			if(needEncoding){
+				encodingList.push(data['format']['filename']);
+			}
+		});
+	}
+}
+
+
 function promisifyCommand (command) {
 	return Promise.promisify( (cb) => {
                         command
+			.on( 'end', () => { cb(null) })
+			.on( 'error', (error) => { cb(error) })
                         .run()
                 })
 }
 
 var runEncodingServer = async function(){
 	if(encodingList.length != 0 && isEncoding == false){
-		console.log('Encoding Started');
 		curFile = encodingList.shift();
-		isEncoding = true;
+		console.log('start encoding ' + curFile);
 	}
 	else{
-		console.log(encodingList + ' ' + encodingList.length);
-		if(isEncoding){
-			console.log('encoding is processing');
-		}
-		else{
-			console.log('No file to encode');
+		if(encodingList.length > 0){
+			console.log(encodingList.length + ' more files to encoding ' + encodingList);
 		}
 		return;
 	}
+	isEncoding = true;
+	var path = require('path');
+	outputName = curFile.replace(path.extname(curFile), ''); 
         var command =  ffmpeg(options)
                                 .on('progress', function(progress){
                                         console.log('processing : ' + progress.percent);
                                 })
-                                .input(curFile['path'])
-                                .output(curFile['path'] + '.' + encOp['format'])
-                                .audioCodec(encOp['acodec']).videoCodec(encOp['vcodec'])
-        command = await promisifyCommand(command);
-        await command()
-        .then ( () => {console.log(curFile['path'] + 'Encoding Success');})	
-        .catch ( (error) => {});
+                                .input(curFile)
+                                .output(outputName + '.' + encOp['format'])
+                                .audioCodec(encOp['acodec'])
+				.videoCodec(encOp['vcodec'])
+        command = promisifyCommand(command);
+        await command().then(() => {console.log('Encoding finished')}).catch((error) => {});
 	isEncoding = false;
 }
 

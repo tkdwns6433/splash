@@ -1,76 +1,68 @@
 var currentPath = 'vods';
 
-function setPath(path){
-	currentPath = path;
-}
+var hostname = document.location.hostname;
 
-function playVideo(vodname){
-	alert(vodname.value + '  this is file');
-}
+var library = ['Type', 'Genre', 'Actors'];
+var depthStacks = new Array();
 
-function moveFolder(folderName){
-	console.log('before folder');
-	var Parent = document.getElementById('tbody');
-	while(Parent.hasChildNodes()){
-		Parent.removeChild(Parent.firstChild);
+
+function goBack(){
+	if(depthStacks.length == 0){
+		alert('first filter!');
 	}
-	setPath(folderName.value);
-	getVodList(folderName.value);
-	console.log('after folder');
-}
-
-function upperFolder()
-{
-	if(currentPath == 'vods'){
-		alert('already Top Folder');
+	else if(depthStacks.length == library.length){
+		depthStacks.pop();
+		renderDepth(library[depthStacks.length]);
 	}
 	else{
-	var path = currentPath.split('/');
-	path.pop();
-	moveFolder(path.join('/'));
+		depthStacks.pop();
+		renderDepth(library[depthStacks.length]);
 	}
 }
 
-function drawDirectory(jsondir='vods'){
-	var tbody = document.getElementById('tbody');
-	while(tbody.hasChildNodes()){
-		tbody.removeChild(tbody.firstChild);
-	}
-        var children = JSON.parse(jsondir)['children'];
-	for(file in children){
-		var row = tbody.insertRow(tbody.rows.length);
-		var cell0 = row.insertCell(0);
-		var cell1 = row.insertCell(1);
-		var cell2 = row.insertCell(2);
-		var cell3 = row.insertCell(3);
-		var cell4 = row.insertCell(4);
-		cell0.innerHTML = children[file]['name'];
-	        cell1.innerHTML = children[file]['size'];
-		cell2.innerHTML = children[file]['extension'];
-		cell3.innerHTML = children[file]['type'];
-		if(cell3.innerHTML == 'file'){
-			cell4.innerHTML = '<button value=' + children[file]['path'] + ' onclick=\'playVideo(this)\'></button>';
-		}
-		else if(cell3.innerHTML == 'directory'){
-	                cell4.innerHTML = '<button value=' + children[file]['path'] + ' onclick=\"moveFolder(this)\"></button>';
-		}
-	}
+
+
+function appendPara(div, data){
+	var para = document.createElement('p');
+	var node = document.createTextNode(data);
+	para.appendChild(node);
+	div.appendChild(para);
 }
 
-function getVodList(dir='vods'){
-	console.log('getVodListCalls');
-	setPath(dir);
+function setModalMetaData(data){
+	var poster = document.getElementById('modal-poster');
+	console.log('called');
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', 'http://127.0.0.1:8390/vodlist' + '?dir=' + dir);
+	xhr.open('GET', 'http://' + hostname + ':8390/synopsis?json='+ JSON.stringify({"originalname":data}));
 	xhr.withCredentials = true;
 	xhr.send();
 	xhr.onload = function() {
 		if (xhr.status = 200) {
-			var vodlists = xhr.response;
-			drawDirectory(vodlists);
+			var metadata = JSON.parse(xhr.response)[0];
+			console.log(metadata);
+			var str = new String(metadata['Poster']);
+			if(str == 'N/A'){
+				poster.src = 'http://103.117.231.226//Admin/main/no_poster.png'
+			}else{
+				poster.src = metadata['Poster'];
+			}
+			document.getElementById('Title').innerHTML = metadata['Title'];
+			document.getElementById('Year').innerHTML = metadata['Year'];
+			document.getElementById('Runtime').innerHTML = 'Runtime : ' + metadata['Runtime'];
+			document.getElementById('Genre').innerHTML = 'Genre : ' +  metadata['Genre'];
+			document.getElementById('Director').innerHTML = 'Director : ' +  metadata['Director'];
+			document.getElementById('Actors').innerHTML = 'Actors : ' +  metadata['Actors'];
+			document.getElementById('Plot').innerHTML = metadata['Plot'];
+			document.getElementById('Language').innerHTML = 'Language : ' +  metadata['Language'];
+			document.getElementById('Metascore').innerHTML = 'Metascore : ' +  metadata['Metascore'];
+			document.getElementById('Path').innerHTML = metadata['path'];
 		} 
 		else {
 			console.log('Error ${xhr.status} : ${xhr.statusText}');
 		}
 	};
-};
+
+	//get request and change modal
+}
+
+
