@@ -12,6 +12,7 @@ Splash는 미디어서버 개발을 쉽게 시작할 수 있도록 도와주는 
 ## 설치
  - Nginx & Nginx-Vod-Module 설치(https://github.com/kaltura/nginx-vod-module)
  - Node JS 설치
+ - MongoDB 
  - splash 클론
  - splash/etc 에 nginx.conf 설정 파일 nginx/conf 폴더에 붙여넣기
  - nginx 웹서버 실행
